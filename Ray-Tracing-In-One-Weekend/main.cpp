@@ -9,13 +9,15 @@
 #include"camera.h"
 #include"color.h"
 #include"material.h"
+#include"bvh.h"
+#include"texture.h"
 
 int main()
 {
     hittable_list world;
 
-    auto ground_material = std::make_shared<lambertian>(color(0.5, 0.5, 0.5));
-    world.add(std::make_shared<sphere>(point3(0, -1000, 0), 1000, ground_material));
+    auto checker = std::make_shared<checker_texture>(0.32, color(0.2, 0.3, 0.1), color(0.9, 0.9, 0.9));
+    world.add(std::make_shared<sphere>(point3(0, -1000, 0), 1000, std::make_shared<lambertian>(checker)));
 
     for (int a = -11; a < 11; a++)
     {
@@ -63,11 +65,13 @@ int main()
     auto material3 = std::make_shared<metal>(color(0.7, 0.6, 0.5), 0.0);
     world.add(std::make_shared<sphere>(point3(4, 1, 0), 1.0, material3));
 
+    world = hittable_list (std::make_shared<bvh_node>(world));
+
     camera cam;
 
     cam.aspect_ratio = 16.0 / 9.0;
     cam.image_width = 400;
-    cam.samples_per_pixel = 10;
+    cam.samples_per_pixel = 100;
     cam.max_depth = 50;
 
     cam.vfov = 20;
