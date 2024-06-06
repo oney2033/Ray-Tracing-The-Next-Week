@@ -12,7 +12,57 @@
 #include"bvh.h"
 #include"texture.h"
 
-int main()
+
+void earth() {
+    
+    auto earth_texture = std::make_shared<image_texture>("earthmap.JPG");
+    auto earth_surface = std::make_shared<lambertian>(earth_texture);
+    auto globe = std::make_shared<sphere>(point3(0, 0, 0), 2, earth_surface);
+
+    camera cam;
+
+    cam.aspect_ratio = 16.0 / 9.0;
+    cam.image_width = 400;
+    cam.samples_per_pixel = 100;
+    cam.max_depth = 50;
+
+    cam.vfov = 20;
+    cam.lookfrom = point3(0, 0, 12);
+    cam.lookat = point3(0, 0, 0);
+    cam.vup = vec3(0, 1, 0);
+
+    cam.defocus_angle = 0;
+
+    cam.render(hittable_list(globe));
+}
+
+
+void two_spheres()
+{
+    hittable_list world;
+    auto checker = std::make_shared<checker_texture>(0.8, color(.2, .3, .1), color(.9, .9, .9));
+
+    world.add(std::make_shared<sphere>(point3(0, -10, 0), 10, std::make_shared<lambertian>(checker)));
+    world.add(std::make_shared<sphere>(point3(0, 10, 0), 10, std::make_shared<lambertian>(checker)));
+
+    camera cam;
+
+    cam.aspect_ratio = 16.0 / 9.0;
+    cam.image_width = 400;
+    cam.samples_per_pixel = 100;
+    cam.max_depth = 50;
+
+    cam.vfov = 20;
+    cam.lookfrom = point3(13, 2, 3);
+    cam.lookat = point3(0, 0, 0);
+    cam.vup = vec3(0, 1, 0);
+
+    cam.defocus_angle = 0;
+
+    cam.render(world);
+}
+
+void random_spheres ()
 {
     hittable_list world;
 
@@ -83,4 +133,14 @@ int main()
     cam.focus_dist = 10;
 
     cam.render(world);
+}
+
+int main() 
+{
+    switch (3) 
+    {
+    case 1: random_spheres(); break;
+    case 2: two_spheres();    break;
+    case 3:  earth();             break;
+    }
 }
