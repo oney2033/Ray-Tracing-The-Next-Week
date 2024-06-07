@@ -74,6 +74,9 @@
     <ClInclude Include="rtw_stb_image.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="peilin.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\Image.jpg">
