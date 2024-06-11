@@ -2,7 +2,7 @@
 #include "rtweekend.h"
 
 #include "hittable.h"
-
+#include"hittable_list.h"
 class quad : public hittable 
 {
 public:
@@ -78,3 +78,28 @@ private:
     vec3 normal;
     double D;
 };
+
+//康奈尔盒子里的两个方块
+
+inline std::shared_ptr<hittable_list>box(const point3& a, const point3& b, std::shared_ptr<material>mat)
+{
+    // 返回包含两个相对顶点 a 和 b 的 3D 盒子（六个边）
+    auto sides = std::make_shared<hittable_list>();
+
+    //用最小和最大坐标构造两个相对的顶点
+    auto min = point3(fmin(a.x(), b.x()), fmin(a.y(), b.y()), fmin(a.z(), b.z()));
+    auto max = point3(fmax(a.x(), b.x()), fmax(a.y(), b.y()), fmax(a.z(), b.z()));
+    
+    auto dx = vec3(max.x() - min.x(), 0, 0);
+    auto dy = vec3(0, max.y() - min.y(), 0);
+    auto dz = vec3(0, 0, max.z() - min.z());
+
+    sides->add(std::make_shared<quad>(point3(min.x(), min.y(), max.z()), dx, dy, mat)); // front
+    sides->add(std::make_shared<quad>(point3(max.x(), min.y(), max.z()), -dz, dy, mat)); // right
+    sides->add(std::make_shared<quad>(point3(max.x(), min.y(), min.z()), -dx, dy, mat)); // back
+    sides->add(std::make_shared<quad>(point3(min.x(), min.y(), min.z()), dz, dy, mat)); // left
+    sides->add(std::make_shared<quad>(point3(min.x(), max.y(), max.z()), dx, -dz, mat)); // top
+    sides->add(std::make_shared<quad>(point3(min.x(), min.y(), min.z()), dx, dz, mat)); // bottom
+
+    return sides;
+}
